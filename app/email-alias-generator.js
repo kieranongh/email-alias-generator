@@ -1,6 +1,6 @@
 export const TOKEN_LENGTH = 6
 
-const generateAttempt = (digits) => {
+export const generateAttempt = (digits) => {
   // generate a random number, truncated to number of digits
   const num = Math.floor(Math.random() * Math.pow(10, digits))
 
@@ -18,7 +18,7 @@ const generateUniqueToken = (existingTokens) => {
   }
 }
 
-const getUsernameAndDomain = (email) => {
+export const getUsernameAndDomain = (email) => {
   return email.split("@")
 }
 

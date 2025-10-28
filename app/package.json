@@ -1,0 +1,20 @@
+{
+  "name": "email-alias-generator",
+  "version": "1.0.0",
+  "description": "Generates simple <user>+<random>@<domain> email aliases for use when signing up for accounts. This helps to identify the source of spam",
+  "main": "index.js",
+  "scripts": {
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:once": "NODE_OPTIONS=--experimental-vm-modules jest"
+  },
+  "keywords": [
+    "email",
+    "alias"
+  ],
+  "author": "Kieran",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^30.2.0"
+  },
+  "type": "module"
+}
