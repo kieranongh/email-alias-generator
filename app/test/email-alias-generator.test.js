@@ -1,5 +1,5 @@
-import { jest, expect } from "@jest/globals"
-import { generateAttempt, generateUniqueToken, getNewEmailAlias, getUsernameAndDomain } from "../email-alias-generator"
+import { jest, expect, describe, it } from "@jest/globals"
+import { generateAttempt, generateUniqueToken, getNewEmailAlias, getUsernameAndDomain, readAliasesFile, writeAliasesFile } from "../email-alias-generator"
 
 describe("generateAttempt", () => {
   it.each([
@@ -109,5 +109,31 @@ describe("getNewEmailAlias", () => {
     expect(() => getNewEmailAlias({ email, existingTokens: new Set() })).toThrow(
       "Email must be 57 or less characters to be valid with an alias"
     )
+  })
+})
+
+describe("readAliasesFile", () => {
+  it("reads existing alias tokens from a file", async () => {
+    const file = {
+      text: async () => "111111\n222222\n333333"
+    }
+
+    const existingTokens = await readAliasesFile(file)
+
+    expect(existingTokens).toBeInstanceOf(Set)
+    expect(existingTokens.size).toBe(3)
+    expect(existingTokens.has("111111")).toBe(true)
+    expect(existingTokens.has("222222")).toBe(true)
+    expect(existingTokens.has("333333")).toBe(true)
+  })
+})
+
+describe("writeAliasesFile", () => {
+  it("writes existing tokens to a file string", () => {
+    const existingTokens = new Set(["111111", "222222", "333333"])
+    const file = writeAliasesFile(existingTokens)
+
+    const lines = file.split("\n")
+    expect(lines).toEqual(["111111", "222222", "333333"])
   })
 })

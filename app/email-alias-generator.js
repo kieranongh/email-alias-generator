@@ -53,3 +53,13 @@ export const getNewEmailAlias = ({ email, existingTokens }) => {
   existingTokens.add(token)
   return `${username}+${token}@${domain}`
 }
+
+export const readAliasesFile = async (file) => {
+  const text = await file.text()
+  const lines = text.split('\n')
+  return new Set(lines)
+}
+
+export const writeAliasesFile = (existingTokens) => {
+  return [...existingTokens].join('\n')
+}
