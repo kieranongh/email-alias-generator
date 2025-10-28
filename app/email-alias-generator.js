@@ -15,7 +15,8 @@ export const generateUniqueToken = (existingTokens) => {
   ++recursionCount
 
   if (existingTokens.has(attempt)) {
-    if (recursionCount === MAX_TRIES) {
+    if (recursionCount >= MAX_TRIES) {
+      recursionCount = 0
       throw Error("Cannot find a new token. May succeed if you try again")
     }
     return generateUniqueToken(existingTokens)
@@ -26,7 +27,11 @@ export const generateUniqueToken = (existingTokens) => {
 }
 
 export const getUsernameAndDomain = (email) => {
-  return email.split("@")
+  let nonAliasedEmail = email
+  if (email.includes("+")) {
+    nonAliasedEmail = email.replace(/\+[^@]+@/, '@');
+  }
+  return nonAliasedEmail.split("@")
 }
 
 export const getNewEmailAlias = ({ email, existingTokens }) => {
