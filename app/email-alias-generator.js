@@ -38,13 +38,14 @@ export const getUsernameAndDomain = (email) => {
 }
 
 export const getNewEmailAlias = ({ email, existingTokens }) => {
-  if (!emailRegexSafe({ exact: true }).test(email)) {
-    throw new Error(`Email: ${email} is invalid`)
+  const emailTrimmed = email.trim()
+  if (!emailRegexSafe({ exact: true }).test(emailTrimmed)) {
+    throw new Error(`Email: ${emailTrimmed} is invalid`)
   }
-  if (/\+.*\+/.test(email)) {
+  if (/\+.*\+/.test(emailTrimmed)) {
     throw new Error("Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them")
   }
-  const [username, domain] = getUsernameAndDomain(email)
+  const [username, domain] = getUsernameAndDomain(emailTrimmed)
   if (username.length > MAX_EMAIL_INPUT_LENGTH) {
     throw new Error("Email must be 57 or less characters to be valid with an alias")
   }

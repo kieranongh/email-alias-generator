@@ -61,7 +61,9 @@ describe("getNewEmailAlias", () => {
     ["with an empty set", "ab@c.co", new Set([]), "ab+111111@c.co", new Set(["111111"])],
     ["after a few failed attempts", "ab@c.co", new Set(["111111", "222222"]), "ab+333333@c.co", new Set(["111111", "222222", "333333"])],
     ["with already aliased emails", "ab+1@c.co", new Set(["111111"]), "ab+222222@c.co", new Set(["111111", "222222"])],
-    ["with just under max length email", "a".repeat(57) + "@ok.com", new Set([]), "a".repeat(57) + "+111111@ok.com", new Set(["111111"])]
+    ["with just under max length email", "a".repeat(57) + "@ok.com", new Set([]), "a".repeat(57) + "+111111@ok.com", new Set(["111111"])],
+    ["with leading space", "  prespaced@example.com", new Set([]), "prespaced+111111@example.com", new Set(["111111"])],
+    ["with trailing space", "postspaced@example.com    \n\r", new Set([]), "postspaced+111111@example.com", new Set(["111111"])],
   ])("should succeed %s", (_, email, existingTokens, expectedAlias, expectedTokens) => {
     jest.spyOn(Math, "random")
       .mockImplementationOnce(() => 0.111111)
