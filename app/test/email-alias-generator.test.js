@@ -14,7 +14,7 @@ describe("generateAttempt", () => {
 
 describe("getUsernameAndDomain", () => {
   it.each([
-    ["a@b.co", "a", "b.co"],
+    ["ab@c.co", "ab", "c.co"],
     ["my@email.com", "my", "email.com"],
     ["has.dots@au", "has.dots", "au"],
     ["under_scored@my_domain.xyz", "under_scored", "my_domain.xyz"],
@@ -58,9 +58,10 @@ describe("generateUniqueToken", () => {
 
 describe("getNewEmailAlias", () => {
   it.each([
-    ["with an empty set", "a@b.co", new Set([]), "a+111111@b.co", new Set(["111111"])],
-    ["after a few failed attempts", "a@b.co", new Set(["111111", "222222"]), "a+333333@b.co", new Set(["111111", "222222", "333333"])],
-    ["with already aliased emails", "a+1@b.co", new Set(["111111"]), "a+222222@b.co", new Set(["111111", "222222"])],
+    ["with an empty set", "ab@c.co", new Set([]), "ab+111111@c.co", new Set(["111111"])],
+    ["after a few failed attempts", "ab@c.co", new Set(["111111", "222222"]), "ab+333333@c.co", new Set(["111111", "222222", "333333"])],
+    ["with already aliased emails", "ab+1@c.co", new Set(["111111"]), "ab+222222@c.co", new Set(["111111", "222222"])],
+    ["with just under max length email", "a".repeat(57) + "@ok.com", new Set([]), "a".repeat(57) + "+111111@ok.com", new Set(["111111"])]
   ])("should succeed %s", (_, email, existingTokens, expectedAlias, expectedTokens) => {
     jest.spyOn(Math, "random")
       .mockImplementationOnce(() => 0.111111)
@@ -77,8 +78,34 @@ describe("getNewEmailAlias", () => {
       .mockImplementationOnce(() => 0.111111)
       .mockImplementationOnce(() => 0.222222)
       .mockReturnValue(0.999999)
-    expect(() => getNewEmailAlias({ email: "a@b.co", existingTokens })).toThrow("Cannot find a new token. May succeed if you try again")
+    expect(() => getNewEmailAlias({ email: "ab@c.co", existingTokens })).toThrow("Cannot find a new token. May succeed if you try again")
     jest.spyOn(Math, "random").mockImplementationOnce(() => 0.333333)
     expect(generateUniqueToken(existingTokens)).toStrictEqual("333333")
+  })
+
+  it.each([
+    ["plainstring"],
+    ["comma@example,com"],
+    ["domain@.starts.with.dot"],
+    [".user@starts.with.dot"],
+    ["invalid@domain-.com"],
+    ["\"quoted\"@example.com"],
+    ["double@at@domain.com"],
+  ])("should error on invalid email (%s)", (email) => {
+    expect(() => getNewEmailAlias({ email, existingTokens: new Set() })).toThrow(`Email: ${email} is invalid`)
+  })
+
+  it("should error on double plused emails", () => {
+    const email = "double+alias+ed@domain.com"
+    expect(() => getNewEmailAlias({ email, existingTokens: new Set() })).toThrow(
+      "Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them"
+    )
+  })
+
+  it("should error if email is or will be too long", () => {
+    const email = "a".repeat(58) + "@toolong.com"
+    expect(() => getNewEmailAlias({ email, existingTokens: new Set() })).toThrow(
+      "Email must be 57 or less characters to be valid with an alias"
+    )
   })
 })

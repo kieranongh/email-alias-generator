@@ -19,5 +19,8 @@
   "engines": {
     "node": "22.21.0"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "email-regex-safe": "^4.0.0"
+  }
 }
