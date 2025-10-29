@@ -1,10 +1,14 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 
 export function ExistingAliasScroller() {
-  const [_, setFileContent] = useState<string>('')
+  const fileUploadRef = useRef<HTMLInputElement>(null)
+  const [_, setFileContent] = useState<string>("")
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onUpload = () => {
+    fileUploadRef.current?.click()
+  }
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -14,25 +18,47 @@ export function ExistingAliasScroller() {
   }
 
   return (
-    <div className="column is-5">
+    <div className="is-flex is-flex-direction-column h-100">
       <div id="file-input" className="file is-boxed is-flex is-justify-content-center">
-        <label className="file-label">
-          <input className="file-input" type="file" name="resume" onChange={handleFileChange} />
+        <button className="button is-info" onClick={onUpload}>
+          <span className="icon">
+            <i className="fas fa-upload" />
+          </span>
+          <span>Upload</span>
+        </button>
+        <input ref={fileUploadRef} type="file" hidden onChange={onFileChange} />
+        <button className="button is-info ml-2">
+          <span className="icon">
+            <i className="fas fa-download" />
+          </span>
+          <span>Download</span>
+        </button>
+        {/* <label className="file-label">
           <span className="file-cta">
             <span className="file-icon">
               <i className="fas fa-upload"></i>
             </span>
             <span className="file-label">Upload current aliases</span>
           </span>
-        </label>
+        </label> */}
       </div>
-      <div className="box" style={{ height: '500px', overflowY: 'scroll' }}>
+      <div className="box mb-4" style={{ minHeight: "100px", overflowY: "scroll" }}>
         <aside className="menu">
           <p className="menu-label">Base email</p>
           <ul className="menu-list">
             {Array.from({ length: 20 }, (_, i) => i + 1).map(x => {
               return (
-                <li><a>{x}</a></li>
+                <li key={x} className="is-flex">
+                  <button>{x}</button>
+                  {/* <button className="delete" aria-label="delete"></button> */}
+                  <span>
+                    <button className="button">
+                      <span className="icon is-small">
+                        <i className="fas fa-x"></i>
+                      </span>
+                    </button>
+                  </span>
+                </li>
               )
             })}
           </ul>
