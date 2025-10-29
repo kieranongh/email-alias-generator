@@ -1,20 +1,50 @@
-import { useRef, useState } from "react"
+import { useMemo, useRef } from "react"
+import { readAliasesFile, writeAliasesFile } from "../services/email-alias-generator"
 
+const downloadFile = (filename: string, content: string) => {
+  const blob = new Blob([content], { type: "text/csv" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = filename
+  a.click()
+  URL.revokeObjectURL(url)
+}
 
-export function ExistingAliasScroller() {
+interface ExistingAliasScrollerProps {
+  existingTokenSet: Set<string>
+  setExistingTokenSet: React.Dispatch<React.SetStateAction<Set<string>>>
+}
+export function ExistingAliasScroller(props: ExistingAliasScrollerProps) {
   const fileUploadRef = useRef<HTMLInputElement>(null)
-  const [_, setFileContent] = useState<string>("")
+
+  const existingTokenArray = useMemo(() => {
+    return [...props.existingTokenSet]
+  }, [props.existingTokenSet])
 
   const onUpload = () => {
     fileUploadRef.current?.click()
   }
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const reader = new FileReader()
-    reader.onload = () => setFileContent(reader.result as string)
-    reader.readAsText(file)
+    const text = await file.text()
+    const uploadedSet = readAliasesFile(text)
+    props.setExistingTokenSet(uploadedSet)
+  }
+
+  const onDownload = () => {
+    const fileText = writeAliasesFile(props.existingTokenSet)
+    downloadFile("Email aliases.csv", fileText)
+  }
+
+  const onDeleteAlias = (alias) => () => {
+    props.setExistingTokenSet(prev => {
+      const next = new Set(prev)
+      next.delete(alias)
+      return next
+    })
   }
 
   return (
@@ -27,7 +57,7 @@ export function ExistingAliasScroller() {
           <span>Upload</span>
         </button>
         <input ref={fileUploadRef} type="file" hidden onChange={onFileChange} />
-        <button className="button is-info ml-2">
+        <button className="button is-info ml-2" onClick={onDownload}>
           <span className="icon">
             <i className="fas fa-download" />
           </span>
@@ -38,12 +68,12 @@ export function ExistingAliasScroller() {
         <aside className="menu">
           <p className="menu-label">Base email</p>
           <ul className="menu-list">
-            {Array.from({ length: 20 }, (_, i) => i + 1).map(x => {
+            {existingTokenArray.map(alias => {
               return (
-                <li key={x} className="is-flex">
-                  <button>{x}</button>
+                <li key={alias} className="is-flex">
+                  <button>{alias}</button>
                   <span>
-                    <button className="button">
+                    <button className="button" onClick={onDeleteAlias(alias)}>
                       <span className="icon is-small">
                         <i className="fas fa-x"></i>
                       </span>

@@ -1,10 +1,28 @@
 import { useState } from "react"
 
-export function AliasGenerator() {
+import { getNewEmailAlias } from "../services/email-alias-generator"
+
+interface AliasGeneratorProps {
+  existingTokenSet: Set<string>
+  setExistingTokenSet: React.Dispatch<React.SetStateAction<Set<string>>>
+}
+export function AliasGenerator(props: AliasGeneratorProps) {
 
   const [baseEmail, setBaseEmail] = useState("")
+  const [error, setError] = useState("")
+  const [newAlias, setNewAlias] = useState("")
 
   const onGenerateAlias = () => {
+    let result: string
+    try {
+      result = getNewEmailAlias({ email: baseEmail, existingTokens: new Set() })
+    } catch (err) {
+      setError((err as Error).message)
+      return
+    }
+    setNewAlias(result)
+    props.setExistingTokenSet(prev => new Set([...prev, result]))
+    setError("")
   }
 
   return (
@@ -18,12 +36,12 @@ export function AliasGenerator() {
             <i className="fas fa-envelope"></i>
           </span>
         </div>
-        {/* <p className="help">This email is invalid</p> */}
+        <p className="help">{error}</p>
       </div>
 
       <div className="field mt-4 is-flex is-justify-content-center">
         <div className="control">
-          <button className="button is-medium is-primary" onClick={onGenerateAlias}>
+          <button type="button" className="button is-medium is-primary" onClick={onGenerateAlias}>
             Generate alias
           </button>
         </div>
@@ -32,7 +50,7 @@ export function AliasGenerator() {
       <div className="field mt-6">
         <label className="label is-medium">New alias</label>
         <div className="box is-size-5 is-flex is-justify-content-space-between is-align-items-center" style={{ minHeight: "80px" }}>
-          <p>{baseEmail || "Generated alias"}</p>
+          <p>{newAlias}</p>
           <div>
             <button className="button">
               <span className="icon">

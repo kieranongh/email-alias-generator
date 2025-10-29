@@ -32,18 +32,22 @@ export const generateUniqueToken = (existingTokens) => {
 export const getUsernameAndDomain = (email) => {
   let nonAliasedEmail = email
   if (email.includes("+")) {
-    nonAliasedEmail = email.replace(/\+[^@]+@/, '@');
+    nonAliasedEmail = email.replace(/\+[^@]+@/, "@");
   }
   return nonAliasedEmail.split("@")
 }
 
-export const getNewEmailAlias = ({ email, existingTokens }) => {
+export interface GetNewEmailAliasProps {
+  email: string
+  existingTokens: Set<string>
+}
+export const getNewEmailAlias = ({ email, existingTokens }: GetNewEmailAliasProps) => {
   const emailTrimmed = email.trim()
   if (!emailRegexSafe({ exact: true }).test(emailTrimmed)) {
     throw new Error(`Email: ${emailTrimmed} is invalid`)
   }
   if (/\+.*\+/.test(emailTrimmed)) {
-    throw new Error("Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them")
+    throw new Error("Whilst emails with multiple "+"s are valid, this application is not built for them, please remove them")
   }
   const [username, domain] = getUsernameAndDomain(emailTrimmed)
   if (username.length > MAX_EMAIL_INPUT_LENGTH) {
@@ -54,12 +58,11 @@ export const getNewEmailAlias = ({ email, existingTokens }) => {
   return `${username}+${token}@${domain}`
 }
 
-export const readAliasesFile = async (file) => {
-  const text = await file.text()
-  const lines = text.split('\n')
+export const readAliasesFile = (text: string) => {
+  const lines = text.split("\n")
   return new Set(lines)
 }
 
-export const writeAliasesFile = (existingTokens) => {
-  return [...existingTokens].join('\n')
+export const writeAliasesFile = (existingTokens: Set<string>) => {
+  return [...existingTokens].join("\n")
 }

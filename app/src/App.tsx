@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 import "bulma/css/bulma.min.css"
 import "./index.css"
 
@@ -5,6 +7,7 @@ import { ExistingAliasScroller } from "./components/ExistingAliasScroller"
 import { AliasGenerator } from "./components/AliasGenerator"
 
 function App() {
+  const [existingTokenSet, setExistingTokenSet] = useState(new Set<string>())
   return (
     <section className="section h-100">
       <div className="container is-max-desktop h-100">
@@ -13,11 +16,17 @@ function App() {
         <div className="columns h-100">
           <div className="column is-1" />
           <div className="column is-4 h-100">
-            <ExistingAliasScroller />
+            <ExistingAliasScroller
+              existingTokenSet={existingTokenSet}
+              setExistingTokenSet={setExistingTokenSet}
+            />
           </div>
           <div className="column is-1" />
           <div className="column is-5 h-100" style={{ height: "100%"}}>
-            <AliasGenerator />
+            <AliasGenerator
+              existingTokenSet={existingTokenSet}
+              setExistingTokenSet={setExistingTokenSet}
+            />
           </div>
         </div>
       </div>
