@@ -9,7 +9,7 @@ export const generateAttempt = (digits) => {
   const num = Math.floor(Math.random() * Math.pow(10, digits))
 
   // pad out with 0s to required digits (for small random numbers)
-  return String(num).padStart(digits, 0)
+  return String(num).padStart(digits, "0")
 }
 
 let recursionCount = 0

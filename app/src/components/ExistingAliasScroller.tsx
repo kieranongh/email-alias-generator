@@ -33,14 +33,6 @@ export function ExistingAliasScroller() {
           </span>
           <span>Download</span>
         </button>
-        {/* <label className="file-label">
-          <span className="file-cta">
-            <span className="file-icon">
-              <i className="fas fa-upload"></i>
-            </span>
-            <span className="file-label">Upload current aliases</span>
-          </span>
-        </label> */}
       </div>
       <div className="box mb-4" style={{ minHeight: "100px", overflowY: "scroll" }}>
         <aside className="menu">
@@ -50,7 +42,6 @@ export function ExistingAliasScroller() {
               return (
                 <li key={x} className="is-flex">
                   <button>{x}</button>
-                  {/* <button className="delete" aria-label="delete"></button> */}
                   <span>
                     <button className="button">
                       <span className="icon is-small">

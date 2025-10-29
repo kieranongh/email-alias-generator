@@ -1,5 +1,5 @@
 import { jest, expect, describe, it } from "@jest/globals"
-import { generateAttempt, generateUniqueToken, getNewEmailAlias, getUsernameAndDomain, readAliasesFile, writeAliasesFile } from "../email-alias-generator"
+import { generateAttempt, generateUniqueToken, getNewEmailAlias, getUsernameAndDomain, readAliasesFile, writeAliasesFile } from "../../src/services/email-alias-generator"
 
 describe("generateAttempt", () => {
   it.each([

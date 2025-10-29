@@ -1,8 +1,8 @@
 import "bulma/css/bulma.min.css"
 import "./index.css"
 
-import { ExistingAliasScroller } from "./ExistingAliasScroller"
-import { AliasGenerator } from "./AliasGenerator"
+import { ExistingAliasScroller } from "./components/ExistingAliasScroller"
+import { AliasGenerator } from "./components/AliasGenerator"
 
 function App() {
   return (
