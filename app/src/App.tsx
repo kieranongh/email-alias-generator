@@ -1,10 +1,18 @@
-function App() {
+import 'bulma/css/bulma.min.css'
 
+import { ExistingAliasScroller } from './ExistingAliasScroller'
+
+function App() {
   return (
     <>
-      <div>
-        <h2>Back to basics</h2>
+      <div className="container is-fluid my-5">
+        <h1 className="title">Email alias generator</h1>
+
+        <div className="columns">
+          <ExistingAliasScroller />
+        </div>
       </div>
+
     </>
   )
 }
