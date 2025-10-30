@@ -67,7 +67,7 @@ export function HelpModal(props: HelpModalProps) {
             </li>
             <li>
               Click Delete (<span className="icon"><i className="fas fa-x" /></span>) to delete
-              the newly generated alias.
+              an alias.
             </li>
             <li>
               Download (<span className="icon"><i className="fas fa-download" /></span>) aliases for storage.
