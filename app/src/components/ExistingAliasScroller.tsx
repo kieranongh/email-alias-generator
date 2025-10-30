@@ -64,26 +64,29 @@ export function ExistingAliasScroller(props: ExistingAliasScrollerProps) {
           <span>Download</span>
         </button>
       </div>
-      <div className="box mb-4" style={{ minHeight: "100px", overflowY: "scroll" }}>
-        <aside className="menu">
-          <p className="menu-label">Base email</p>
-          <ul className="menu-list">
-            {existingTokenArray.map(alias => {
-              return (
-                <li key={alias} className="is-flex">
-                  <button>{alias}</button>
-                  <span>
-                    <button className="button" onClick={onDeleteAlias(alias)}>
-                      <span className="icon is-small">
-                        <i className="fas fa-x"></i>
-                      </span>
-                    </button>
-                  </span>
-                </li>
-              )
-            })}
-          </ul>
-        </aside>
+      <div className="mt-4">
+        <h3 className="subtitle is-3">Aliases</h3>
+        <div className="box mb-4" style={{ minHeight: "100px", maxHeight: "300px", overflowY: "scroll" }}>
+          <aside className="menu">
+            <p className="menu-label">Base email</p>
+            <ul className="menu-list">
+              {existingTokenArray.map(alias => {
+                return (
+                  <li key={alias} className="is-flex">
+                    <button>{alias}</button>
+                    <span>
+                      <button className="button" onClick={onDeleteAlias(alias)}>
+                        <span className="icon is-small">
+                          <i className="fas fa-x"></i>
+                        </span>
+                      </button>
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+          </aside>
+        </div>
       </div>
     </div>
   )

@@ -27,7 +27,7 @@ export function AliasGenerator(props: AliasGeneratorProps) {
 
   return (
     <>
-      <div className="field" style={{ marginTop: "100px" }}>
+      <div className="field">
         <label className="label is-medium ">Email</label>
         <div className="control has-icons-left">
           <input className="input is-medium " type="email"
@@ -42,7 +42,12 @@ export function AliasGenerator(props: AliasGeneratorProps) {
       <div className="field mt-4 is-flex is-justify-content-center">
         <div className="control">
           <button type="button" className="button is-medium is-primary" onClick={onGenerateAlias}>
-            Generate alias
+            <span>
+              Generate alias
+            </span>
+            <span className="icon is-medium">
+              <i className="fas fa-wand-sparkles" />
+            </span>
           </button>
         </div>
       </div>

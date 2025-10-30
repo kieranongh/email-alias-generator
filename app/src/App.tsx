@@ -5,15 +5,21 @@ import "./index.css"
 
 import { ExistingAliasScroller } from "./components/ExistingAliasScroller"
 import { AliasGenerator } from "./components/AliasGenerator"
+import { TopNavbar } from "./components/TopNavbar"
 
 function App() {
   const [existingTokenSet, setExistingTokenSet] = useState(new Set<string>())
   return (
     <section className="section h-100">
       <div className="container is-max-desktop h-100">
-        <h1 className="title">Email alias generator</h1>
+        <TopNavbar />
+        <div className="level mb-6">
+          <div className="level-item">
+            <h2 className="title is-2 has-text-centered">Email alias generator</h2>
+          </div>
+        </div>
 
-        <div className="columns h-100">
+        <div className="columns">
           <div className="column is-1" />
           <div className="column is-4 h-100">
             <ExistingAliasScroller
@@ -22,7 +28,7 @@ function App() {
             />
           </div>
           <div className="column is-1" />
-          <div className="column is-5 h-100" style={{ height: "100%"}}>
+          <div className="column is-5 h-100">
             <AliasGenerator
               existingTokenSet={existingTokenSet}
               setExistingTokenSet={setExistingTokenSet}
