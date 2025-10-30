@@ -58,19 +58,22 @@ describe("generateUniqueToken", () => {
 
 describe("getNewEmailAlias", () => {
   it.each([
-    ["with an empty set", "ab@c.co", new Set([]), "ab+111111@c.co", new Set(["111111"])],
-    ["after a few failed attempts", "ab@c.co", new Set(["111111", "222222"]), "ab+333333@c.co", new Set(["111111", "222222", "333333"])],
-    ["with already aliased emails", "ab+1@c.co", new Set(["111111"]), "ab+222222@c.co", new Set(["111111", "222222"])],
-    ["with just under max length email", "a".repeat(57) + "@ok.com", new Set([]), "a".repeat(57) + "+111111@ok.com", new Set(["111111"])],
-    ["with leading space", "  prespaced@example.com", new Set([]), "prespaced+111111@example.com", new Set(["111111"])],
-    ["with trailing space", "postspaced@example.com    \n\r", new Set([]), "postspaced+111111@example.com", new Set(["111111"])],
-  ])("should succeed %s", (_, email, existingTokens, expectedAlias, expectedTokens) => {
+    ["with an empty set", "ab@c.co", new Set([]), "ab+111111@c.co", "111111", new Set(["111111"])],
+    ["after a few failed attempts", "ab@c.co", new Set(["111111", "222222"]), "ab+333333@c.co", "333333", new Set(["111111", "222222", "333333"])],
+    ["with already aliased emails", "ab+1@c.co", new Set(["111111"]), "ab+222222@c.co", "222222", new Set(["111111", "222222"])],
+    ["with just under max length email", "a".repeat(57) + "@ok.com", new Set([]), "a".repeat(57) + "+111111@ok.com", "111111", new Set(["111111"])],
+    ["with leading space", "  prespaced@example.com", new Set([]), "prespaced+111111@example.com", "111111", new Set(["111111"])],
+    ["with trailing space", "postspaced@example.com    \n\r", new Set([]), "postspaced+111111@example.com", "111111", new Set(["111111"])],
+  ])("should succeed %s", (_, email, existingTokens, expectedAlias, expectedToken, expectedTokens) => {
     jest.spyOn(Math, "random")
       .mockImplementationOnce(() => 0.111111)
       .mockImplementationOnce(() => 0.222222)
       .mockReturnValue(0.333333)
 
-    expect(getNewEmailAlias({ email, existingTokens })).toBe(expectedAlias)
+    expect(getNewEmailAlias({ email, existingTokens })).toStrictEqual({
+      alias: expectedAlias,
+      token: expectedToken,
+    })
     expect(existingTokens).toStrictEqual(expectedTokens)
   })
 
@@ -113,12 +116,10 @@ describe("getNewEmailAlias", () => {
 })
 
 describe("readAliasesFile", () => {
-  it("reads existing alias tokens from a file", async () => {
-    const file = {
-      text: async () => "111111\n222222\n333333"
-    }
+  it("reads existing alias tokens from a file", () => {
+    const fileText = "111111\n222222\n333333"
 
-    const existingTokens = await readAliasesFile(file)
+    const existingTokens = readAliasesFile(fileText)
 
     expect(existingTokens).toBeInstanceOf(Set)
     expect(existingTokens.size).toBe(3)

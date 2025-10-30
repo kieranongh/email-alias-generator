@@ -85,7 +85,7 @@ export const getNewEmailAlias = ({ email, existingTokens }: GetNewEmailAliasProp
 
   // Check for multiple pluses (1..*) - we can't handle them
   if (/\+.*\+/.test(emailTrimmed)) {
-    throw new Error("Whilst emails with multiple "+"s are valid, this application is not built for them, please remove them")
+    throw new Error("Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them")
   }
 
   const [username, domain] = getUsernameAndDomain(emailTrimmed)
