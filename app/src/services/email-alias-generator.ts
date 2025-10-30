@@ -98,7 +98,10 @@ export const getNewEmailAlias = ({ email, existingTokens }: GetNewEmailAliasProp
   // Generate token, add it to the set and return an alias
   const token = generateUniqueToken(existingTokens)
   existingTokens.add(token)
-  return `${username}+${token}@${domain}`
+  return {
+    alias: `${username}+${token}@${domain}`,
+    token
+  }
 }
 
 export const readAliasesFile = (text: string) => {

@@ -9,6 +9,7 @@ import { ExistingAliasScroller } from "./components/ExistingAliasScroller"
 import { AliasGenerator } from "./components/AliasGenerator"
 
 function App() {
+  const [existingAliasSet, setExistingAliasSet] = useState(new Set<string>())
   const [existingTokenSet, setExistingTokenSet] = useState(new Set<string>())
   const [baseEmail, setBaseEmail] = useState("")
 
@@ -25,7 +26,8 @@ function App() {
           <div className="column is-1" />
           <div className="column is-5">
             <FileUploadDownload
-              existingTokenSet={existingTokenSet}
+              existingAliasSet={existingAliasSet}
+              setExistingAliasSet={setExistingAliasSet}
               setExistingTokenSet={setExistingTokenSet}
             />
           </div>
@@ -35,13 +37,16 @@ function App() {
           <div className="column is-1" />
           <div className="column is-5 h-100">
             <ExistingAliasScroller
-              existingTokenSet={existingTokenSet}
+              existingAliasSet={existingAliasSet}
+              setExistingAliasSet={setExistingAliasSet}
               setExistingTokenSet={setExistingTokenSet}
               onSelectAlias={(alias: string) => setBaseEmail(alias)}
             />
           </div>
           <div className="column is-5 h-100">
             <AliasGenerator
+              existingAliasSet={existingAliasSet}
+              setExistingAliasSet={setExistingAliasSet}
               existingTokenSet={existingTokenSet}
               setExistingTokenSet={setExistingTokenSet}
               baseEmail={baseEmail}

@@ -1,5 +1,5 @@
 import { useRef } from "react"
-import { readAliasesFile, writeAliasesFile } from "../services/email-alias-generator"
+import { getTokenFromAlias, readAliasesFile, writeAliasesFile } from "../services/email-alias-generator"
 
 const downloadFile = (filename: string, content: string) => {
   const blob = new Blob([content], { type: "text/csv" })
@@ -12,7 +12,8 @@ const downloadFile = (filename: string, content: string) => {
 }
 
 interface FileUploadDownloadProps {
-  existingTokenSet: Set<string>
+  existingAliasSet: Set<string>
+  setExistingAliasSet: React.Dispatch<React.SetStateAction<Set<string>>>
   setExistingTokenSet: React.Dispatch<React.SetStateAction<Set<string>>>
 }
 export function FileUploadDownload(props: FileUploadDownloadProps) {
@@ -27,11 +28,15 @@ export function FileUploadDownload(props: FileUploadDownloadProps) {
 
     const text = await file.text()
     const uploadedSet = readAliasesFile(text)
-    props.setExistingTokenSet(uploadedSet)
+    props.setExistingAliasSet(uploadedSet)
+    const tokens = [...uploadedSet].map(alias => {
+      return getTokenFromAlias(alias)
+    })
+    props.setExistingTokenSet(new Set(tokens))
   }
 
   const onDownload = () => {
-    const fileText = writeAliasesFile(props.existingTokenSet)
+    const fileText = writeAliasesFile(props.existingAliasSet)
     downloadFile("Email aliases.csv", fileText)
   }
 

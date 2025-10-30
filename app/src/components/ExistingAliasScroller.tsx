@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react"
 
 import { ContextToast } from "./ContextToast"
+import { getTokenFromAlias } from "../services/email-alias-generator"
 
 interface ExistingAliasScrollerProps {
-  existingTokenSet: Set<string>
+  existingAliasSet: Set<string>
+  setExistingAliasSet: React.Dispatch<React.SetStateAction<Set<string>>>
   setExistingTokenSet: React.Dispatch<React.SetStateAction<Set<string>>>
   onSelectAlias: (alias: string) => void
 }
@@ -11,9 +13,9 @@ export function ExistingAliasScroller(props: ExistingAliasScrollerProps) {
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const [selectedAlias, setSelectedAlias] = useState<string | null>(null)
 
-  const existingTokenArray = useMemo(() => {
-    return [...props.existingTokenSet]
-  }, [props.existingTokenSet])
+  const existingAliasArray = useMemo(() => {
+    return [...props.existingAliasSet]
+  }, [props.existingAliasSet])
 
   const onCopyToClipboard = (alias: string) => async (e) => {
     e.stopPropagation()
@@ -30,14 +32,21 @@ export function ExistingAliasScroller(props: ExistingAliasScrollerProps) {
 
   const onDeleteAlias = (alias: string) => (e) => {
     e.stopPropagation()
-    props.setExistingTokenSet(prev => {
+    props.setExistingAliasSet(prev => {
       const next = new Set(prev)
       next.delete(alias)
+      return next
+    })
+    props.setExistingTokenSet(prev => {
+      const next = new Set(prev)
+      const token = getTokenFromAlias(alias)
+      next.delete(token)
       return next
     })
   }
 
   const onDeleteAllAliases = () => {
+    props.setExistingAliasSet(new Set())
     props.setExistingTokenSet(new Set())
   }
 
@@ -54,10 +63,10 @@ export function ExistingAliasScroller(props: ExistingAliasScrollerProps) {
         </button>
         </div>
       <div style={{ maxHeight: "300px", overflowY: "scroll" }}>
-      {existingTokenArray.length === 0 && (
+      {existingAliasArray.length === 0 && (
         <a className="panel-block has-text-centered">No aliases</a>
       )}
-      {existingTokenArray.map(alias => {
+      {existingAliasArray.map((alias, i) => {
         return (
           <a className="panel-block is-flex is-justify-content-space-between" key={alias} onClick={() => props.onSelectAlias(alias)}>
             <span>{alias}</span>

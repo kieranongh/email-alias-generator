@@ -4,6 +4,8 @@ import { getNewEmailAlias } from "../services/email-alias-generator"
 import { ContextToast } from "./ContextToast"
 
 interface AliasGeneratorProps {
+  existingAliasSet: Set<string>
+  setExistingAliasSet: React.Dispatch<React.SetStateAction<Set<string>>>
   existingTokenSet: Set<string>
   setExistingTokenSet: React.Dispatch<React.SetStateAction<Set<string>>>
   baseEmail: string
@@ -12,6 +14,7 @@ interface AliasGeneratorProps {
 export function AliasGenerator(props: AliasGeneratorProps) {
   const [error, setError] = useState("")
   const [newAlias, setNewAlias] = useState("")
+  const [newToken, setNewToken] = useState("")
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   const onClearBaseEmail = () => {
@@ -25,26 +28,34 @@ export function AliasGenerator(props: AliasGeneratorProps) {
   }
 
   const onGenerateAlias = () => {
-    let result: string
+    let alias: string, token: string
     try {
-      result = getNewEmailAlias({ email: props.baseEmail, existingTokens: new Set() })
+      ({ alias, token } = getNewEmailAlias({ email: props.baseEmail, existingTokens: props.existingTokenSet }))
     } catch (err) {
       setError((err as Error).message)
       return
     }
-    setNewAlias(result)
-    props.setExistingTokenSet(prev => new Set([...prev, result]))
+    setNewAlias(alias)
+    setNewToken(token)
+    props.setExistingAliasSet(prev => new Set([...prev, alias]))
+    props.setExistingTokenSet(prev => new Set([...prev, token]))
     setError("")
   }
 
   const onDeleteNewAlias = () => {
     if (newAlias) {
+      props.setExistingAliasSet(prev => {
+        const next = new Set(prev)
+        next.delete(newToken)
+        return next
+      })
       props.setExistingTokenSet(prev => {
         const next = new Set(prev)
         next.delete(newAlias)
         return next
       })
       setNewAlias("")
+      setNewToken("")
     }
   }
   const onCopyToClipboard = async () => {
