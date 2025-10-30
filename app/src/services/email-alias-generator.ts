@@ -37,6 +37,17 @@ export const getUsernameAndDomain = (email) => {
   return nonAliasedEmail.split("@")
 }
 
+export const getTokenFromAlias = (alias: string) => {
+  /**
+   * Separate out the token from an alias string
+   */
+  if (!alias.includes("+")) {
+    throw new Error(`${alias} is not an aliased email`)
+  }
+
+  return alias.slice(alias.indexOf("+") + 1, alias.indexOf("@"))
+}
+
 export interface GetNewEmailAliasProps {
   email: string
   existingTokens: Set<string>
