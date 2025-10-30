@@ -68,8 +68,12 @@ export function ExistingAliasScroller(props: ExistingAliasScrollerProps) {
       )}
       {existingAliasArray.map((alias, i) => {
         return (
-          <a className="panel-block is-flex is-justify-content-space-between" key={alias} onClick={() => props.onSelectAlias(alias)}>
-            <span>{alias}</span>
+          <a
+            className="panel-block p-1 is-flex is-justify-content-space-between"
+            key={alias}
+            onClick={() => props.onSelectAlias(alias)}
+          >
+            <p className="p-3 mr-2" style={{ overflowX: "auto" }}>{alias}</p>
             <div className="is-flex">
               <div className="is-relative">
                 <button className="button" onClick={onCopyToClipboard(alias)}>
@@ -80,6 +84,7 @@ export function ExistingAliasScroller(props: ExistingAliasScrollerProps) {
                 {toastMessage && alias === selectedAlias && (
                   <ContextToast
                     message={toastMessage}
+                    orientation={i !== existingAliasArray.length - 1 ? "bottom" : "top"}
                     onClose={() => {
                       setToastMessage(null)
                       setSelectedAlias(null)

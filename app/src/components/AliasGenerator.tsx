@@ -109,8 +109,8 @@ export function AliasGenerator(props: AliasGeneratorProps) {
 
       <div className="field mt-6">
         <label className="label is-medium">New alias</label>
-        <div className="box is-size-5 is-flex is-justify-content-space-between is-align-items-center" style={{ minHeight: "80px" }}>
-          <p>{newAlias}</p>
+        <div className="box p-1 is-flex is-justify-content-space-between is-align-items-center is-size-5" style={{ minHeight: "80px" }}>
+          <p className="p-3 mr-2" style={{ overflowX: "auto" }}>{newAlias}</p>
           <div className="is-flex">
             <div className="is-relative">
               <button className="button" onClick={onCopyToClipboard}>
