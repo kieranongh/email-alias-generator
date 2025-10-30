@@ -46,12 +46,12 @@ export function AliasGenerator(props: AliasGeneratorProps) {
     if (newAlias) {
       props.setExistingAliasSet(prev => {
         const next = new Set(prev)
-        next.delete(newToken)
+        next.delete(newAlias)
         return next
       })
       props.setExistingTokenSet(prev => {
         const next = new Set(prev)
-        next.delete(newAlias)
+        next.delete(newToken)
         return next
       })
       setNewAlias("")
