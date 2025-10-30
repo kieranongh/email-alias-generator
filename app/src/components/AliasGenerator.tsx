@@ -6,16 +6,16 @@ import { ContextToast } from "./ContextToast"
 interface AliasGeneratorProps {
   existingTokenSet: Set<string>
   setExistingTokenSet: React.Dispatch<React.SetStateAction<Set<string>>>
+  baseEmail: string
+  setBaseEmail: React.Dispatch<React.SetStateAction<string>>
 }
 export function AliasGenerator(props: AliasGeneratorProps) {
-
-  const [baseEmail, setBaseEmail] = useState("")
   const [error, setError] = useState("")
   const [newAlias, setNewAlias] = useState("")
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   const onClearBaseEmail = () => {
-    setBaseEmail("")
+    props.setBaseEmail("")
   }
 
   const onBaseEmailKeyDown = (e) => {
@@ -27,7 +27,7 @@ export function AliasGenerator(props: AliasGeneratorProps) {
   const onGenerateAlias = () => {
     let result: string
     try {
-      result = getNewEmailAlias({ email: baseEmail, existingTokens: new Set() })
+      result = getNewEmailAlias({ email: props.baseEmail, existingTokens: new Set() })
     } catch (err) {
       setError((err as Error).message)
       return
@@ -60,7 +60,7 @@ export function AliasGenerator(props: AliasGeneratorProps) {
   }
 
   return (
-    <>
+    <div className="box">
       <div className="field">
         <label className="label is-medium">Email</label>
         <div className="control has-icons-left has-icons-right">
@@ -68,8 +68,8 @@ export function AliasGenerator(props: AliasGeneratorProps) {
             className="input is-medium"
             type="email"
             placeholder="Base email"
-            value={baseEmail}
-            onChange={(e) => setBaseEmail(e.target.value)}
+            value={props.baseEmail}
+            onChange={(e) => props.setBaseEmail(e.target.value)}
             onKeyDown={onBaseEmailKeyDown}
             autoFocus
           />
@@ -122,6 +122,6 @@ export function AliasGenerator(props: AliasGeneratorProps) {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
