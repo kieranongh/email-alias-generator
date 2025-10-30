@@ -50,7 +50,7 @@ export function HelpModal(props: HelpModalProps) {
           <button className="delete" aria-label="close" onClick={props.onClose}></button>
         </header>
         <section className="modal-card-body">
-          <ul>
+          <ul className="is-list">
             <li>
               Upload (<span className="icon"><i className="fas fa-upload" /></span>)
               existing aliases, if any. This will prevent clashes with existing aliases and allows
