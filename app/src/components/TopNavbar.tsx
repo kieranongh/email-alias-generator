@@ -57,8 +57,8 @@ export function HelpModal(props: HelpModalProps) {
               you to delete aliases no longer in use.
             </li>
             <li>
-              Enter your base email and click Generate alias (
-                <span className="icon is-medium"><i className="fas fa-wand-sparkles" /></span>
+              Enter your base email or click an existing alias and click Generate alias (
+                <span className="icon"><i className="fas fa-wand-sparkles" /></span>
               ) to create a new alias. New aliases are automatically added to the list of existing ones.
             </li>
             <li>
