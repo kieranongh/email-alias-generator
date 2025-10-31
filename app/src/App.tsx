@@ -15,6 +15,16 @@ function App() {
 
   return (
     <section className="section h-100">
+      <a
+        className="link"
+        style={{ position: "absolute", top: 10, right: 10 }}
+        target="blank"
+        href="https://github.com/kieranongh/email-alias-generator/tree/develop"
+      >
+        <span className="icon is-medium">
+          <i className="fa-brands fa-github fa-xl"></i>
+        </span>
+      </a>
       <div className="container is-max-desktop h-100">
         <TopNavbar />
         <div className="level mb-6">
