@@ -51,7 +51,7 @@ export const getUsernameAndDomain = (email: string) => {
   let nonAliasedEmail = email
   // Allow aliased emails, but remove the alias out
   if (email.includes("+")) {
-    nonAliasedEmail = email.replace(/\+[^@]+@/, "@");
+    nonAliasedEmail = email.replace(/\+[^@]+@/, "@")
   }
   return nonAliasedEmail.split("@")
 }
@@ -67,7 +67,9 @@ export const getTokenFromAlias = (alias: string) => {
     throw new Error(`Email: ${aliasTrimmed} is invalid`)
   }
   if (/\+.*\+/.test(aliasTrimmed)) {
-    throw new Error("Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them")
+    throw new Error(
+      "Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them",
+    )
   }
   if (!alias.includes("+")) {
     throw new Error(`${alias} is not an aliased email`)
@@ -80,7 +82,10 @@ export interface GetNewEmailAliasProps {
   email: string
   existingTokens: Set<string>
 }
-export const getNewEmailAlias = ({ email, existingTokens }: GetNewEmailAliasProps) => {
+export const getNewEmailAlias = ({
+  email,
+  existingTokens,
+}: GetNewEmailAliasProps) => {
   /**
    * Key function that generates unique aliases from the given email
    * and ensures uniqueness against the given set of existing tokens
@@ -94,14 +99,18 @@ export const getNewEmailAlias = ({ email, existingTokens }: GetNewEmailAliasProp
 
   // Check for multiple pluses (1..*) - we can't handle them
   if (/\+.*\+/.test(emailTrimmed)) {
-    throw new Error("Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them")
+    throw new Error(
+      "Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them",
+    )
   }
 
   const [username, domain] = getUsernameAndDomain(emailTrimmed)
 
   // Check that the email length will still be valid with our alias added
   if (username.length > MAX_EMAIL_INPUT_LENGTH) {
-    throw new Error("Email must be 57 or less characters to be valid with an alias")
+    throw new Error(
+      "Email must be 57 or less characters to be valid with an alias",
+    )
   }
 
   // Generate token, add it to the set and return an alias
@@ -109,7 +118,7 @@ export const getNewEmailAlias = ({ email, existingTokens }: GetNewEmailAliasProp
   existingTokens.add(token)
   return {
     alias: `${username}+${token}@${domain}`,
-    token
+    token,
   }
 }
 
@@ -122,8 +131,7 @@ export const writeAliasesFile = (existingTokens: Set<string>) => {
   return [...existingTokens].join("\n")
 }
 
-
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.generateAttempt = generateAttempt
   window.generateUniqueToken = generateUniqueToken
   window.getNewEmailAlias = getNewEmailAlias

@@ -8,11 +8,11 @@ interface ContextToastProps {
 }
 
 export function ContextToast({
-    message,
-    orientation,
-    duration,
-    onClose,
-  }: ContextToastProps) {
+  message,
+  orientation,
+  duration,
+  onClose,
+}: ContextToastProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose?.()
@@ -30,14 +30,17 @@ export function ContextToast({
   }
 
   return (
-    <div className="tag is-medium" style={{
-      position: "absolute",
-      zIndex: 999,
-      whiteSpace: "nowrap",
-      ...orientationProps,
-      left: "50%",
-      transform: "translateX(-50%)",
-    }}>
+    <div
+      className="tag is-medium"
+      style={{
+        position: "absolute",
+        zIndex: 999,
+        whiteSpace: "nowrap",
+        ...orientationProps,
+        left: "50%",
+        transform: "translateX(-50%)",
+      }}
+    >
       {message}
     </div>
   )

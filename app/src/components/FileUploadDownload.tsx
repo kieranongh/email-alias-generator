@@ -1,5 +1,9 @@
 import { useRef } from "react"
-import { getTokenFromAlias, readAliasesFile, writeAliasesFile } from "../services/email-alias-generator"
+import {
+  getTokenFromAlias,
+  readAliasesFile,
+  writeAliasesFile,
+} from "../services/email-alias-generator"
 
 const downloadFile = (filename: string, content: string) => {
   const blob = new Blob([content], { type: "text/csv" })
@@ -41,7 +45,10 @@ export function FileUploadDownload(props: FileUploadDownloadProps) {
   }
 
   return (
-    <div id="file-input" className="file is-boxed is-flex is-justify-content-center">
+    <div
+      id="file-input"
+      className="file is-boxed is-flex is-justify-content-center"
+    >
       <button className="button is-info" onClick={onUpload}>
         <span className="icon">
           <i className="fas fa-upload" />

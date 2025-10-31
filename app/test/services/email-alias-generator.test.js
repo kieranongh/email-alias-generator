@@ -6,14 +6,14 @@ import {
   getTokenFromAlias,
   getUsernameAndDomain,
   readAliasesFile,
-  writeAliasesFile
+  writeAliasesFile,
 } from "../../src/services/email-alias-generator"
 
 describe("generateAttempt", () => {
   it.each([
     [6, "123456"],
     [3, "123"],
-    [8, "12345678"]
+    [8, "12345678"],
   ])("should return random string of %s digits", (digits, expected) => {
     jest.spyOn(Math, "random").mockReturnValue(0.123456789)
     expect(generateAttempt(digits)).toStrictEqual(expected)
@@ -28,15 +28,22 @@ describe("getUsernameAndDomain", () => {
     ["under_scored@my_domain.xyz", "under_scored", "my_domain.xyz"],
     ["my+alias@email.com", "my", "email.com"],
     ["reinput+111111@aliases.r.us", "reinput", "aliases.r.us"],
-  ])("should split email (%s) into username and domain", (email, expectedUsername, expectedDomain) => {
-    expect(getUsernameAndDomain(email)).toStrictEqual([expectedUsername, expectedDomain])
-  })
+  ])(
+    "should split email (%s) into username and domain",
+    (email, expectedUsername, expectedDomain) => {
+      expect(getUsernameAndDomain(email)).toStrictEqual([
+        expectedUsername,
+        expectedDomain,
+      ])
+    },
+  )
 })
 
 describe("generateUniqueToken", () => {
   it("should return first new token", () => {
     const existingTokens = new Set()
-    jest.spyOn(Math, "random")
+    jest
+      .spyOn(Math, "random")
       .mockImplementationOnce(() => 0.111111)
       .mockImplementationOnce(() => 0.222222)
       .mockReturnValue(0.999999)
@@ -45,7 +52,8 @@ describe("generateUniqueToken", () => {
 
   it("should try again if token/s exist", () => {
     const existingTokens = new Set(["111111", "222222"])
-    jest.spyOn(Math, "random")
+    jest
+      .spyOn(Math, "random")
       .mockImplementationOnce(() => 0.111111)
       .mockImplementationOnce(() => 0.222222)
       .mockReturnValue(0.999999)
@@ -54,11 +62,14 @@ describe("generateUniqueToken", () => {
 
   it("should fail but succeed on retries after a number of failed attempts", () => {
     const existingTokens = new Set(["111111", "222222", "999999"])
-    jest.spyOn(Math, "random")
+    jest
+      .spyOn(Math, "random")
       .mockImplementationOnce(() => 0.111111)
       .mockImplementationOnce(() => 0.222222)
       .mockReturnValue(0.999999)
-    expect(() => generateUniqueToken(existingTokens)).toThrow("Cannot find a new token. May succeed if you try again")
+    expect(() => generateUniqueToken(existingTokens)).toThrow(
+      "Cannot find a new token. May succeed if you try again",
+    )
     jest.spyOn(Math, "random").mockImplementationOnce(() => 0.333333)
     expect(generateUniqueToken(existingTokens)).toStrictEqual("333333")
   })
@@ -75,7 +86,9 @@ describe("getTokenFromAlias", () => {
   })
 
   it("should throw an error if no + in input", () => {
-    expect(() => getTokenFromAlias("ab@c.co")).toThrow("ab@c.co is not an aliased email")
+    expect(() => getTokenFromAlias("ab@c.co")).toThrow(
+      "ab@c.co is not an aliased email",
+    )
   })
 
   it.each([
@@ -84,48 +97,104 @@ describe("getTokenFromAlias", () => {
     ["domain@.starts.with.dot"],
     [".user@starts.with.dot"],
     ["invalid@domain-.com"],
-    ["\"quoted\"@example.com"],
+    ['"quoted"@example.com'],
     ["double@at@domain.com"],
-  ])("should error on invalid email (%s)", (alias) => {
+  ])("should error on invalid email (%s)", alias => {
     expect(() => getTokenFromAlias(alias).toThrow(`Email: ${alias} is invalid`))
   })
 
   it("should error on double plused emails", () => {
     const alias = "double+alias+ed@domain.com"
     expect(() => getTokenFromAlias(alias)).toThrow(
-      "Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them"
+      "Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them",
     )
   })
 })
 
 describe("getNewEmailAlias", () => {
   it.each([
-    ["with an empty set", "ab@c.co", new Set([]), "ab+111111@c.co", "111111", new Set(["111111"])],
-    ["after a few failed attempts", "ab@c.co", new Set(["111111", "222222"]), "ab+333333@c.co", "333333", new Set(["111111", "222222", "333333"])],
-    ["with already aliased emails", "ab+1@c.co", new Set(["111111"]), "ab+222222@c.co", "222222", new Set(["111111", "222222"])],
-    ["with just under max length email", "a".repeat(57) + "@ok.com", new Set([]), "a".repeat(57) + "+111111@ok.com", "111111", new Set(["111111"])],
-    ["with leading space", "  prespaced@example.com", new Set([]), "prespaced+111111@example.com", "111111", new Set(["111111"])],
-    ["with trailing space", "postspaced@example.com    \n\r", new Set([]), "postspaced+111111@example.com", "111111", new Set(["111111"])],
-  ])("should succeed %s", (_, email, existingTokens, expectedAlias, expectedToken, expectedTokens) => {
-    jest.spyOn(Math, "random")
-      .mockImplementationOnce(() => 0.111111)
-      .mockImplementationOnce(() => 0.222222)
-      .mockReturnValue(0.333333)
+    [
+      "with an empty set",
+      "ab@c.co",
+      new Set([]),
+      "ab+111111@c.co",
+      "111111",
+      new Set(["111111"]),
+    ],
+    [
+      "after a few failed attempts",
+      "ab@c.co",
+      new Set(["111111", "222222"]),
+      "ab+333333@c.co",
+      "333333",
+      new Set(["111111", "222222", "333333"]),
+    ],
+    [
+      "with already aliased emails",
+      "ab+1@c.co",
+      new Set(["111111"]),
+      "ab+222222@c.co",
+      "222222",
+      new Set(["111111", "222222"]),
+    ],
+    [
+      "with just under max length email",
+      "a".repeat(57) + "@ok.com",
+      new Set([]),
+      "a".repeat(57) + "+111111@ok.com",
+      "111111",
+      new Set(["111111"]),
+    ],
+    [
+      "with leading space",
+      "  prespaced@example.com",
+      new Set([]),
+      "prespaced+111111@example.com",
+      "111111",
+      new Set(["111111"]),
+    ],
+    [
+      "with trailing space",
+      "postspaced@example.com    \n\r",
+      new Set([]),
+      "postspaced+111111@example.com",
+      "111111",
+      new Set(["111111"]),
+    ],
+  ])(
+    "should succeed %s",
+    (
+      _,
+      email,
+      existingTokens,
+      expectedAlias,
+      expectedToken,
+      expectedTokens,
+    ) => {
+      jest
+        .spyOn(Math, "random")
+        .mockImplementationOnce(() => 0.111111)
+        .mockImplementationOnce(() => 0.222222)
+        .mockReturnValue(0.333333)
 
-    expect(getNewEmailAlias({ email, existingTokens })).toStrictEqual({
-      alias: expectedAlias,
-      token: expectedToken,
-    })
-    expect(existingTokens).toStrictEqual(expectedTokens)
-  })
+      expect(getNewEmailAlias({ email, existingTokens })).toStrictEqual({
+        alias: expectedAlias,
+        token: expectedToken,
+      })
+      expect(existingTokens).toStrictEqual(expectedTokens)
+    },
+  )
 
   it("should fail but succeed on retries after a number of failed attempts", () => {
     const existingTokens = new Set(["111111", "222222", "999999"])
-    jest.spyOn(Math, "random")
+    jest
+      .spyOn(Math, "random")
       .mockImplementationOnce(() => 0.111111)
       .mockImplementationOnce(() => 0.222222)
       .mockReturnValue(0.999999)
-    expect(() => getNewEmailAlias({ email: "ab@c.co", existingTokens })).toThrow("Cannot find a new token. May succeed if you try again")
+    expect(() =>
+      getNewEmailAlias({ email: "ab@c.co", existingTokens }),
+    ).toThrow("Cannot find a new token. May succeed if you try again")
     jest.spyOn(Math, "random").mockImplementationOnce(() => 0.333333)
     expect(generateUniqueToken(existingTokens)).toStrictEqual("333333")
   })
@@ -136,24 +205,28 @@ describe("getNewEmailAlias", () => {
     ["domain@.starts.with.dot"],
     [".user@starts.with.dot"],
     ["invalid@domain-.com"],
-    ["\"quoted\"@example.com"],
+    ['"quoted"@example.com'],
     ["double@at@domain.com"],
-  ])("should error on invalid email (%s)", (email) => {
-    expect(() => getNewEmailAlias({ email, existingTokens: new Set() })).toThrow(`Email: ${email} is invalid`)
+  ])("should error on invalid email (%s)", email => {
+    expect(() =>
+      getNewEmailAlias({ email, existingTokens: new Set() }),
+    ).toThrow(`Email: ${email} is invalid`)
   })
 
   it("should error on double plused emails", () => {
     const email = "double+alias+ed@domain.com"
-    expect(() => getNewEmailAlias({ email, existingTokens: new Set() })).toThrow(
-      "Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them"
+    expect(() =>
+      getNewEmailAlias({ email, existingTokens: new Set() }),
+    ).toThrow(
+      "Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them",
     )
   })
 
   it("should error if email is or will be too long", () => {
     const email = "a".repeat(58) + "@toolong.com"
-    expect(() => getNewEmailAlias({ email, existingTokens: new Set() })).toThrow(
-      "Email must be 57 or less characters to be valid with an alias"
-    )
+    expect(() =>
+      getNewEmailAlias({ email, existingTokens: new Set() }),
+    ).toThrow("Email must be 57 or less characters to be valid with an alias")
   })
 })
 

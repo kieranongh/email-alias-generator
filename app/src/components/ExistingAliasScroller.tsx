@@ -17,7 +17,7 @@ export function ExistingAliasScroller(props: ExistingAliasScrollerProps) {
     return [...props.existingAliasSet]
   }, [props.existingAliasSet])
 
-  const onCopyToClipboard = (alias: string) => async (e) => {
+  const onCopyToClipboard = (alias: string) => async e => {
     e.stopPropagation()
     try {
       await window.navigator.clipboard.writeText(alias)
@@ -30,7 +30,7 @@ export function ExistingAliasScroller(props: ExistingAliasScrollerProps) {
     }
   }
 
-  const onDeleteAlias = (alias: string) => (e) => {
+  const onDeleteAlias = (alias: string) => e => {
     e.stopPropagation()
     props.setExistingAliasSet(prev => {
       const next = new Set(prev)
@@ -54,53 +54,58 @@ export function ExistingAliasScroller(props: ExistingAliasScrollerProps) {
     <nav className="box panel mb-4">
       <div className="is-flex is-justify-content-space-between is-align-items-center">
         <label className="label is-medium ml-4" style={{ padding: "0.2em 0" }}>
-          <span>
-            Aliases
-          </span>
+          <span>Aliases</span>
         </label>
-        <button className="button is-outline is-small mr-2" onClick={onDeleteAllAliases}>
+        <button
+          className="button is-outline is-small mr-2"
+          onClick={onDeleteAllAliases}
+        >
           <span>Clear all</span>
         </button>
-        </div>
+      </div>
       <div style={{ maxHeight: "300px", overflowY: "scroll" }}>
-      {existingAliasArray.length === 0 && (
-        <a className="panel-block has-text-centered">No aliases</a>
-      )}
-      {existingAliasArray.map((alias, i) => {
-        return (
-          <a
-            className="panel-block p-1 is-flex is-justify-content-space-between"
-            key={alias}
-            onClick={() => props.onSelectAlias(alias)}
-          >
-            <p className="p-3 mr-2" style={{ overflowX: "auto" }}>{alias}</p>
-            <div className="is-flex">
-              <div className="is-relative">
-                <button className="button" onClick={onCopyToClipboard(alias)}>
-                  <span className="icon">
-                    <i className="fas fa-copy"></i>
+        {existingAliasArray.length === 0 && (
+          <a className="panel-block has-text-centered">No aliases</a>
+        )}
+        {existingAliasArray.map((alias, i) => {
+          return (
+            <a
+              className="panel-block p-1 is-flex is-justify-content-space-between"
+              key={alias}
+              onClick={() => props.onSelectAlias(alias)}
+            >
+              <p className="p-3 mr-2" style={{ overflowX: "auto" }}>
+                {alias}
+              </p>
+              <div className="is-flex">
+                <div className="is-relative">
+                  <button className="button" onClick={onCopyToClipboard(alias)}>
+                    <span className="icon">
+                      <i className="fas fa-copy"></i>
+                    </span>
+                  </button>
+                  {toastMessage && alias === selectedAlias && (
+                    <ContextToast
+                      message={toastMessage}
+                      orientation={
+                        i !== existingAliasArray.length - 1 ? "bottom" : "top"
+                      }
+                      onClose={() => {
+                        setToastMessage(null)
+                        setSelectedAlias(null)
+                      }}
+                    />
+                  )}
+                </div>
+                <button className="button ml-2" onClick={onDeleteAlias(alias)}>
+                  <span className="icon is-small">
+                    <i className="fas fa-x"></i>
                   </span>
                 </button>
-                {toastMessage && alias === selectedAlias && (
-                  <ContextToast
-                    message={toastMessage}
-                    orientation={i !== existingAliasArray.length - 1 ? "bottom" : "top"}
-                    onClose={() => {
-                      setToastMessage(null)
-                      setSelectedAlias(null)
-                    }}
-                  />
-                )}
               </div>
-              <button className="button ml-2" onClick={onDeleteAlias(alias)}>
-                <span className="icon is-small">
-                  <i className="fas fa-x"></i>
-                </span>
-              </button>
-            </div>
-          </a>
-        )
-      })}
+            </a>
+          )
+        })}
       </div>
     </nav>
   )

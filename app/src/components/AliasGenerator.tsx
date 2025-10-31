@@ -21,7 +21,7 @@ export function AliasGenerator(props: AliasGeneratorProps) {
     props.setBaseEmail("")
   }
 
-  const onBaseEmailKeyDown = (e) => {
+  const onBaseEmailKeyDown = e => {
     if (e.key === "Enter") {
       onGenerateAlias()
     }
@@ -30,7 +30,10 @@ export function AliasGenerator(props: AliasGeneratorProps) {
   const onGenerateAlias = () => {
     let alias: string, token: string
     try {
-      ({ alias, token } = getNewEmailAlias({ email: props.baseEmail, existingTokens: props.existingTokenSet }))
+      ;({ alias, token } = getNewEmailAlias({
+        email: props.baseEmail,
+        existingTokens: props.existingTokenSet,
+      }))
     } catch (err) {
       setError((err as Error).message)
       return
@@ -80,14 +83,17 @@ export function AliasGenerator(props: AliasGeneratorProps) {
             type="email"
             placeholder="Base email"
             value={props.baseEmail}
-            onChange={(e) => props.setBaseEmail(e.target.value)}
+            onChange={e => props.setBaseEmail(e.target.value)}
             onKeyDown={onBaseEmailKeyDown}
             autoFocus
           />
           <span className="icon is-left">
             <i className="fas fa-envelope"></i>
           </span>
-          <span className="icon is-right is-clickable" onClick={onClearBaseEmail}>
+          <span
+            className="icon is-right is-clickable"
+            onClick={onClearBaseEmail}
+          >
             <i className="fas fa-x"></i>
           </span>
         </div>
@@ -96,10 +102,12 @@ export function AliasGenerator(props: AliasGeneratorProps) {
 
       <div className="field mt-4 is-flex is-justify-content-center">
         <div className="control">
-          <button type="button" className="button is-medium is-primary" onClick={onGenerateAlias}>
-            <span>
-              Generate alias
-            </span>
+          <button
+            type="button"
+            className="button is-medium is-primary"
+            onClick={onGenerateAlias}
+          >
+            <span>Generate alias</span>
             <span className="icon is-medium">
               <i className="fas fa-wand-sparkles" />
             </span>
@@ -109,8 +117,13 @@ export function AliasGenerator(props: AliasGeneratorProps) {
 
       <div className="field mt-6">
         <label className="label is-medium">New alias</label>
-        <div className="box p-1 is-flex is-justify-content-space-between is-align-items-center is-size-5" style={{ minHeight: "80px" }}>
-          <p className="p-3 mr-2" style={{ overflowX: "auto" }}>{newAlias}</p>
+        <div
+          className="box p-1 is-flex is-justify-content-space-between is-align-items-center is-size-5"
+          style={{ minHeight: "80px" }}
+        >
+          <p className="p-3 mr-2" style={{ overflowX: "auto" }}>
+            {newAlias}
+          </p>
           <div className="is-flex">
             <div className="is-relative">
               <button className="button" onClick={onCopyToClipboard}>

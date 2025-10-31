@@ -19,7 +19,9 @@ function App() {
         <TopNavbar />
         <div className="level mb-6">
           <div className="level-item">
-            <h2 className="title is-2 has-text-centered">Email alias generator</h2>
+            <h2 className="title is-2 has-text-centered">
+              Email alias generator
+            </h2>
           </div>
         </div>
         <div className="columns">
@@ -55,7 +57,6 @@ function App() {
           </div>
         </div>
       </div>
-
     </section>
   )
 }
