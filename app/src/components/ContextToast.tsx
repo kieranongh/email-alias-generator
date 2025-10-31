@@ -7,19 +7,24 @@ interface ContextToastProps {
   onClose?: () => void
 }
 
-export function ContextToast(props: ContextToastProps) {
+export function ContextToast({
+    message,
+    orientation,
+    duration,
+    onClose,
+  }: ContextToastProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
-      props.onClose?.()
-    }, props.duration ?? 2000)
+      onClose?.()
+    }, duration ?? 2000)
     return () => clearTimeout(timer)
-  }, [props.duration])
+  }, [duration, onClose])
 
-  let orientation = {
+  let orientationProps = {
     top: "calc(100% + 0.5em)",
   }
-  if (props.orientation === "top") {
-    orientation = {
+  if (orientation === "top") {
+    orientationProps = {
       top: "-3em",
     }
   }
@@ -29,11 +34,11 @@ export function ContextToast(props: ContextToastProps) {
       position: "absolute",
       zIndex: 999,
       whiteSpace: "nowrap",
-      ...orientation,
+      ...orientationProps,
       left: "50%",
       transform: "translateX(-50%)",
     }}>
-      {props.message}
+      {message}
     </div>
   )
 }

@@ -21,18 +21,18 @@ export function TopNavbar() {
 interface EscapeHookProps {
   onClose: () => void
 }
-function useEscape(props: EscapeHookProps) {
+function useEscape({ onClose }: EscapeHookProps) {
   return useEffect(() => {
 
     const onKeyDown = (e) => {
       if (e.key === "Escape") {
-        props.onClose()
+        onClose()
       }
     }
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [props.onClose])
+  }, [onClose])
 }
 
 interface HelpModalProps {
