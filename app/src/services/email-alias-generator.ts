@@ -60,6 +60,15 @@ export const getTokenFromAlias = (alias: string) => {
   /**
    * Separate out the token from an alias string
    */
+  const aliasTrimmed = alias.trim()
+
+  // Run email regex checker - throw an error if it's not an email
+  if (!emailRegexSafe({ exact: true }).test(aliasTrimmed)) {
+    throw new Error(`Email: ${aliasTrimmed} is invalid`)
+  }
+  if (/\+.*\+/.test(aliasTrimmed)) {
+    throw new Error("Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them")
+  }
   if (!alias.includes("+")) {
     throw new Error(`${alias} is not an aliased email`)
   }

@@ -1,5 +1,13 @@
 import { jest, expect, describe, it } from "@jest/globals"
-import { generateAttempt, generateUniqueToken, getNewEmailAlias, getUsernameAndDomain, readAliasesFile, writeAliasesFile } from "../../src/services/email-alias-generator"
+import {
+  generateAttempt,
+  generateUniqueToken,
+  getNewEmailAlias,
+  getTokenFromAlias,
+  getUsernameAndDomain,
+  readAliasesFile,
+  writeAliasesFile
+} from "../../src/services/email-alias-generator"
 
 describe("generateAttempt", () => {
   it.each([
@@ -53,6 +61,40 @@ describe("generateUniqueToken", () => {
     expect(() => generateUniqueToken(existingTokens)).toThrow("Cannot find a new token. May succeed if you try again")
     jest.spyOn(Math, "random").mockImplementationOnce(() => 0.333333)
     expect(generateUniqueToken(existingTokens)).toStrictEqual("333333")
+  })
+})
+
+describe("getTokenFromAlias", () => {
+  it.each([
+    ["ab+111111@c.co", "111111"],
+    ["user+999999@example.com", "999999"],
+    ["  spaced+999999@out.com  ", "999999"],
+    ["different+schema.type@example.com", "schema.type"],
+  ])("should correctly read tokens in aliases", (input, expectedToken) => {
+    expect(getTokenFromAlias(input)).toBe(expectedToken)
+  })
+
+  it("should throw an error if no + in input", () => {
+    expect(() => getTokenFromAlias("ab@c.co")).toThrow("ab@c.co is not an aliased email")
+  })
+
+  it.each([
+    ["plainstring"],
+    ["comma@example,com"],
+    ["domain@.starts.with.dot"],
+    [".user@starts.with.dot"],
+    ["invalid@domain-.com"],
+    ["\"quoted\"@example.com"],
+    ["double@at@domain.com"],
+  ])("should error on invalid email (%s)", (alias) => {
+    expect(() => getTokenFromAlias(alias).toThrow(`Email: ${alias} is invalid`))
+  })
+
+  it("should error on double plused emails", () => {
+    const alias = "double+alias+ed@domain.com"
+    expect(() => getTokenFromAlias(alias)).toThrow(
+      "Whilst emails with multiple '+'s are valid, this application is not built for them, please remove them"
+    )
   })
 })
 
