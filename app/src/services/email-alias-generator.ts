@@ -121,3 +121,14 @@ export const readAliasesFile = (text: string) => {
 export const writeAliasesFile = (existingTokens: Set<string>) => {
   return [...existingTokens].join("\n")
 }
+
+
+if (typeof window !== 'undefined') {
+  window.generateAttempt = generateAttempt
+  window.generateUniqueToken = generateUniqueToken
+  window.getNewEmailAlias = getNewEmailAlias
+  window.getTokenFromAlias = getTokenFromAlias
+  window.getUsernameAndDomain = getUsernameAndDomain
+  window.readAliasesFile = readAliasesFile
+  window.writeAliasesFile = writeAliasesFile
+}
