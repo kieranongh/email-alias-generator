@@ -13,3 +13,9 @@ dist-ssr
 
 # Dependency directories
 node_modules
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/

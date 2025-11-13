@@ -1,0 +1,15 @@
+# ruff.toml
+lint.select = ["E", "F", "ANN"]
+
+respect-gitignore = true
+fix = false
+
+preview = true
+
+line-length = 88
+exclude = [
+    ".git",
+    "__pycache__",
+    "node_modules",
+    "dist",
+]
