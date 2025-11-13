@@ -1,5 +1,6 @@
 import random
 import re
+from email_validator import validate_email, EmailNotValidError
 
 TOKEN_LENGTH = 6
 MAX_TRIES = 20
@@ -15,7 +16,6 @@ def generate_attempt(digits: int) -> str:
         raise ValueError("digits must be 1 or higher")
 
     # generate a random integer - up to number of digits
-    # num: int = random.randrange(0, 10**digits)
     num: int = int(random.random() * (10**digits))
 
     # pad out with 0s to required digits (for small random numbers)
@@ -54,3 +54,64 @@ def get_username_and_domain(email: str) -> tuple[str, str]:
     if "+" in email:
         non_aliased_email = re.sub(r"\+[^@]+@", "@", email)
     return non_aliased_email.split("@")
+
+
+def get_token_from_alias(alias: str) -> str:
+    """
+    Separate out the token from an alias string
+    """
+    alias_trimmed = alias.strip()
+
+    # Run email regex checker - throw an error if it's not an email
+    try:
+        validate_email(alias_trimmed, check_deliverability=False)
+    except EmailNotValidError:
+        raise ValueError(f"Email: {alias_trimmed} is invalid")
+
+    if re.search(r"\+.*\+", alias_trimmed):
+        raise ValueError(
+            "Whilst emails with multiple '+'s are valid, this application "
+            + "is not built for them, please remove them"
+        )
+
+    if "+" not in alias_trimmed:
+        raise ValueError(f"{alias_trimmed} is not an aliased email")
+
+    return alias_trimmed[alias_trimmed.index("+") + 1 : alias_trimmed.index("@")]
+
+
+def get_new_email_alias(email: str, existing_tokens: set[str]) -> tuple[str, str]:
+    """
+    Key function that generates unique aliases from the given email
+    and ensures uniqueness against the given set of existing tokens
+    """
+    email_trimmed = email.strip()
+
+    # Run email regex checker - throw an error if it's not an email
+    try:
+        validate_email(email_trimmed, check_deliverability=False)
+    except EmailNotValidError:
+        raise ValueError(f"Email: {email_trimmed} is invalid")
+
+    import re
+
+    # Check for multiple pluses (1..*) - we can't handle them
+    if re.search(r"\+.*\+", email_trimmed):
+        raise ValueError(
+            "Whilst emails with multiple '+'s are valid, this application "
+            + "is not built for them, please remove them"
+        )
+
+    username, domain = get_username_and_domain(email_trimmed)
+
+    # Check that the email length will still be valid with our alias added
+    if len(username) > MAX_EMAIL_INPUT_LENGTH:
+        raise ValueError(
+            f"Email must be {MAX_EMAIL_INPUT_LENGTH} or less characters to be "
+            + "valid with an alias"
+        )
+
+    # Generate token, add it to the set and return an alias
+    token = generate_unique_token(existing_tokens)
+    existing_tokens.add(token)
+    return [f"{username}+{token}@{domain}", token]

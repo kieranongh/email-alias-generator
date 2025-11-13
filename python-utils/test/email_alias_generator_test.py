@@ -6,6 +6,8 @@ from src.email_alias_generator import (
     generate_attempt,
     generate_unique_token,
     get_username_and_domain,
+    get_token_from_alias,
+    get_new_email_alias,
 )
 
 
@@ -77,3 +79,168 @@ class TestGetUsernameAndDomain:
         result = get_username_and_domain(email)
 
         assert result == [expected_username, expected_domain]
+
+
+class TestGetTokenFromAlias:
+    @pytest.mark.parametrize(
+        "input_email, expected_token",
+        [
+            ("ab+111111@c.co", "111111"),
+            ("user+999999@example.com", "999999"),
+            ("  spaced+999999@out.com  ", "999999"),
+            ("different+schema.type@example.com", "schema.type"),
+        ],
+    )
+    def test_should_correctly_read_tokens_in_aliases(
+        self, input_email: str, expected_token: str
+    ) -> None:
+        assert get_token_from_alias(input_email) == expected_token
+
+    def test_should_throw_if_no_plus_in_input(self) -> None:
+        with pytest.raises(ValueError, match="is not an aliased email"):
+            get_token_from_alias("ab@c.co")
+
+    @pytest.mark.parametrize(
+        "alias",
+        [
+            "plainstring",
+            "comma@example,com",
+            "domain@.starts.with.dot",
+            ".user@starts.with.dot",
+            "invalid@domain-.com",
+            '"quoted"@example.com',
+            "double@at@domain.com",
+        ],
+    )
+    def test_should_error_on_invalid_email(self, alias: str) -> None:
+        with pytest.raises(ValueError, match=f"Email: {alias} is invalid"):
+            get_token_from_alias(alias)
+
+    def test_should_error_on_double_plused_emails(self) -> None:
+        alias = "double+alias+ed@domain.com"
+        with pytest.raises(
+            ValueError,
+            match="Whilst emails with multiple '\\+'s are valid, this application "
+            + "is not built for them, please remove them",
+        ):
+            get_token_from_alias(alias)
+
+
+class TestGetNewEmailAlias:
+    @pytest.mark.parametrize(
+        "_, email, existing_tokens, expected_alias, expected_token, expected_tokens",
+        [
+            (
+                "with an empty set",
+                "ab@c.co",
+                set(),
+                "ab+111111@c.co",
+                "111111",
+                {"111111"},
+            ),
+            (
+                "after a few failed attempts",
+                "ab@c.co",
+                {"111111", "222222"},
+                "ab+333333@c.co",
+                "333333",
+                {"111111", "222222", "333333"},
+            ),
+            (
+                "with already aliased emails",
+                "ab+1@c.co",
+                {"111111"},
+                "ab+222222@c.co",
+                "222222",
+                {"111111", "222222"},
+            ),
+            (
+                "with just under max length email",
+                "a" * 57 + "@ok.com",
+                set(),
+                "a" * 57 + "+111111@ok.com",
+                "111111",
+                {"111111"},
+            ),
+            (
+                "with leading space",
+                "  prespaced@example.com",
+                set(),
+                "prespaced+111111@example.com",
+                "111111",
+                {"111111"},
+            ),
+            (
+                "with trailing space",
+                "postspaced@example.com    \n\r",
+                set(),
+                "postspaced+111111@example.com",
+                "111111",
+                {"111111"},
+            ),
+        ],
+    )
+    def test_should_succeed(
+        self,
+        _: any,
+        email: str,
+        existing_tokens: set[str],
+        expected_alias: str,
+        expected_token: str,
+        expected_tokens: set[str],
+    ) -> None:
+        seq = [0.111111, 0.222222, 0.333333]
+        with patch.object(random, "random", side_effect=lambda: seq.pop(0)):
+            result = get_new_email_alias(email=email, existing_tokens=existing_tokens)
+            assert result == [expected_alias, expected_token]
+            assert existing_tokens == expected_tokens
+
+    def test_should_fail_but_succeed_on_retries(self) -> None:
+        existing_tokens = {"111111", "222222", "999999"}
+        seq = [0.111111, 0.222222]
+
+        with patch.object(
+            random, "random", side_effect=lambda: seq.pop(0) if seq else 0.999999
+        ):
+            with pytest.raises(
+                RuntimeError,
+                match="Cannot find a new token. May succeed if you try again",
+            ):
+                get_new_email_alias(email="ab@c.co", existing_tokens=existing_tokens)
+        with patch.object(random, "random", return_value=0.333333):
+            assert get_new_email_alias(
+                email="ab@c.co", existing_tokens=existing_tokens
+            ) == ["ab+333333@c.co", "333333"]
+
+    @pytest.mark.parametrize(
+        "email",
+        [
+            "plainstring",
+            "comma@example,com",
+            "domain@.starts.with.dot",
+            ".user@starts.with.dot",
+            "invalid@domain-.com",
+            '"quoted"@example.com',
+            "double@at@domain.com",
+        ],
+    )
+    def test_should_error_on_invalid_email(self, email: str) -> None:
+        with pytest.raises(ValueError, match=f"Email: {email} is invalid"):
+            get_new_email_alias(email=email, existing_tokens=set())
+
+    def test_should_error_on_double_plused_emails(self) -> None:
+        email = "double+alias+ed@domain.com"
+        with pytest.raises(
+            ValueError,
+            match="Whilst emails with multiple '\\+'s are valid, this application "
+            + "is not built for them, please remove them",
+        ):
+            get_new_email_alias(email=email, existing_tokens=set())
+
+    def test_should_error_if_email_too_long(self) -> None:
+        email = "a" * 58 + "@toolong.com"
+        with pytest.raises(
+            ValueError,
+            match="Email must be 57 or less characters to be valid with an alias",
+        ):
+            get_new_email_alias(email=email, existing_tokens=set())
