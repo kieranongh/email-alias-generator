@@ -13,7 +13,9 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "test:once": "NODE_OPTIONS=--experimental-vm-modules jest",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist -b master --dest ./docs -m 'Deploy to GitHub pages'"
+    "deploy": "gh-pages -d dist -b master --dest ./docs -m 'Deploy to GitHub pages'",
+    "py:lint": "black . && ruff check . --fix",
+    "py:test": "pytest"
   },
   "keywords": [
     "email",
