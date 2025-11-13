@@ -4,21 +4,39 @@
 #
 #    pip-compile requirements.in
 #
+black==25.11.0
+    # via -r requirements.in
+click==8.1.8
+    # via black
 exceptiongroup==1.3.0
     # via pytest
 iniconfig==2.1.0
     # via pytest
+mypy-extensions==1.1.0
+    # via black
 packaging==25.0
-    # via pytest
+    # via
+    #   black
+    #   pytest
+pathspec==0.12.1
+    # via black
+platformdirs==4.4.0
+    # via black
 pluggy==1.6.0
     # via pytest
 pygments==2.19.2
     # via pytest
 pytest==8.4.2
     # via -r requirements.in
+pytokens==0.3.0
+    # via black
 ruff==0.14.4
     # via -r requirements.in
 tomli==2.3.0
-    # via pytest
+    # via
+    #   black
+    #   pytest
 typing-extensions==4.15.0
-    # via exceptiongroup
+    # via
+    #   black
+    #   exceptiongroup
