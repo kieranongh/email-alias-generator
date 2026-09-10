@@ -79,6 +79,8 @@ def generate_unique_token(existing_tokens: set[str], depth: int = 0) -> str
 def get_new_email_alias(email: str, existing_tokens: set[str]) -> tuple[str, str]
 def get_token_from_alias(alias: str) -> str
 def get_username_and_domain(email: str) -> tuple[str, str]
+def load_aliases_from_file(filename: str) -> set[str]
+def store_aliases_to_file(tokens: set[str], filename: str) -> None
 ```
 
 ### Build set up

@@ -9,6 +9,10 @@ MAX_EMAIL_INPUT_LENGTH = 64 - 1 - TOKEN_LENGTH
 
 
 def load_aliases_from_file(filename: str) -> set[str]:
+    """
+    Load aliases from given filename and returns a set
+    Note: if there are any duplicates, they'll be removed
+    """
     if not filename:
         raise ValueError("filename cannot be empty")
 
@@ -21,6 +25,10 @@ def load_aliases_from_file(filename: str) -> set[str]:
 
 
 def store_aliases_to_file(tokens: set[str], filename: str) -> None:
+    """
+    Store aliases as a file at the given filename - one alias
+    per line
+    """
     if not filename:
         raise ValueError("filename cannot be empty")
     with open(filename, "w") as f:
