@@ -1,10 +1,31 @@
 import random
 import re
-from email_validator import validate_email, EmailNotValidError
+
+from email_validator import EmailNotValidError, validate_email
 
 TOKEN_LENGTH = 6
 MAX_TRIES = 20
 MAX_EMAIL_INPUT_LENGTH = 64 - 1 - TOKEN_LENGTH
+
+
+def load_aliases_from_file(filename: str) -> set[str]:
+    if not filename:
+        raise ValueError("filename cannot be empty")
+
+    token_set: set[str] = set()
+    with open(filename, "r") as f:
+        for line in f:
+            token_set.add(line.strip())
+
+    return token_set
+
+
+def store_aliases_to_file(tokens: set[str], filename: str) -> None:
+    if not filename:
+        raise ValueError("filename cannot be empty")
+    with open(filename, "w") as f:
+        for token in tokens:
+            f.write(f"{token}\n")
 
 
 def generate_attempt(digits: int) -> str:
@@ -25,8 +46,8 @@ def generate_attempt(digits: int) -> str:
 def generate_unique_token(existing_tokens: set[str], depth: int = 0) -> str:
     """
     Repeats the function trying to generate a unique token
-    that's not in the set or will fail to prevent infinite
-    loops
+    that's not in the set or will fail after MAX_TRIES to
+    prevent infinite loops
     """
     # Generate an attempt
     attempt = generate_attempt(TOKEN_LENGTH)

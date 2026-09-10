@@ -1,13 +1,17 @@
-import pytest
 import random
+from pathlib import Path
 from unittest.mock import patch
+
+import pytest
 
 from src.email_alias_generator import (
     generate_attempt,
     generate_unique_token,
-    get_username_and_domain,
-    get_token_from_alias,
     get_new_email_alias,
+    get_token_from_alias,
+    get_username_and_domain,
+    load_aliases_from_file,
+    store_aliases_to_file,
 )
 
 
@@ -29,6 +33,54 @@ def test_generate_attempt(digits: int, expected: str) -> None:
         result = generate_attempt(digits)
 
     assert result == expected
+
+
+class TestLoadAliasesFromFile:
+    def test_should_raise_error_when_filename_empty(self) -> None:
+        with pytest.raises(ValueError, match="filename cannot be empty"):
+            load_aliases_from_file("")
+
+    def test_should_load_aliases_from_existing_file(self, tmp_path: Path) -> None:
+        file_path = tmp_path / "aliases.csv"
+        file_path.write_text("ab+111111@c.co\nab+222222@c.co\nab+333333@c.co\n")
+
+        result = load_aliases_from_file(str(file_path))
+
+        assert result == {"ab+111111@c.co", "ab+222222@c.co", "ab+333333@c.co"}
+
+    def test_should_return_empty_set_for_empty_file(self, tmp_path: Path) -> None:
+        file_path = tmp_path / "empty_aliases.csv"
+        file_path.write_text("")
+
+        result = load_aliases_from_file(str(file_path))
+
+        assert result == set()
+
+
+class TestStoreAliasesToFile:
+    def test_should_raise_error_when_filename_empty(self) -> None:
+        with pytest.raises(ValueError, match="filename cannot be empty"):
+            store_aliases_to_file({"ab+111111@c.co"}, "")
+
+    def test_should_write_aliases_to_file(self, tmp_path: Path) -> None:
+        file_path = tmp_path / "aliases.csv"
+        aliases = {"ab+111111@c.co", "ab+222222@c.co"}
+
+        store_aliases_to_file(aliases, str(file_path))
+
+        with open(file_path, "r") as f:
+            lines = f.readlines()
+
+        assert set(line.strip() for line in lines) == aliases
+
+    def test_should_write_empty_file_when_aliases_set_is_empty(
+        self, tmp_path: Path
+    ) -> None:
+        file_path = tmp_path / "empty_aliases.csv"
+
+        store_aliases_to_file(set(), str(file_path))
+
+        assert file_path.read_text() == ""
 
 
 class TestGenerateUniqueToken:
